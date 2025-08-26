@@ -1,0 +1,35 @@
+trigger: none
+
+pr:
+  branches:
+    include:
+      - main
+
+pool:
+  vmImage: 'ubuntu-20.04'
+
+variables:
+  buildConfiguration: 'Release'
+
+jobs:
+- job: PreBuild
+  displayName: 'Prebuild validation'
+  steps:
+  - task: DotNetCoreCLI@2
+    displayName: 'Restore dependencies'
+    inputs:
+      command: 'restore'
+      projects: '**/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Build project'
+    inputs:
+      command: 'build'
+      arguments: '--configuration $(buildConfiguration)'
+      projects: '**/*.csproj'
+
+  - task: DotNetCoreCLI@2
+    displayName: 'Run tests'
+    inputs:
+      command: 'test'
+      projects: '**/*Tests.csproj'
